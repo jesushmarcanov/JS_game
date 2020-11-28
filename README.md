@@ -1,5 +1,6 @@
 # JS_game
 Desarrollo de mi primer videojuego en Javascript, se trata de famoso juego de lanzar la pelota para pegarle a las barras.
+Créditos: Andrzej Mazur from @EnclaveGames
 
 Metodos Canvas
 metodo rect(): Este método dibuja un rectángulo o cuadrado, tiene 4 parámetros, que son:
