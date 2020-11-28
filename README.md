@@ -17,3 +17,5 @@ en este ejemplo se dibuja un cuadrado con los siguientes parámetros:
 50 px de ancho
 50 px alto
 
+37 -> indica que se ha preisonado la flecha izquierda del teclado
+39 -> indica que se ha preisonado la flecha derecha del teclado
