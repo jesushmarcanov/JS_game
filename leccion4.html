@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>Gamedev Canvas workshop -- Control de la Pala y el Teclado</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+
+    <script>
+        var canvas = document.getElementById("myCanvas"); //Creamos el lienzo con el objeto canvas
+        var ctx = canvas.getContext("2d"); //Definimos el entorno o contexto ctx
+        var radioBola = 10; //Radio de la bola
+        var x = canvas.width/2;    // Variable que define el movimiento en X de la bola 
+        var y = canvas.height - 30;    // Variable que define el movimiento en Y de la bola 
+        var dx = 2; // Variable que dibuja el fotograma de la bola
+        var dy = -2; // Variable que dibuja el fotograma de la bola
+        var altoPaleta = 10; //altura de a paleta inferior
+        var anchoPaleta = 75; //ancho de la paleta inferior
+        var paletaX = (canvas.width-anchoPaleta)/2; //Variable que define la posicion de la paleta en e eje X
+        var presionaDerecha = false; //Variable que determina si se ha presionado el boton flecha derecha
+        var presionaIzquierda = false; //Variable que determina si se ha presionado el boton flecha izquierda
+        
+        document.addEventListener("keydown", keyDownHandler, false); //Determina si se ha presionado la tecla
+        document.addEventListener("keyup", keyUpHandler, false); //Determina si se ha liberado la tecla
+
+        //Funcion que se ejecuta cuando se presiona una tecla
+        function keyDownHandler(e){
+            if (e.keyCode == 39){
+                presionaDerecha = true;
+            } else if (e.keyCode == 37){
+                presionaIzquierda = true;
+            }
+        }
+        //Funcion que se ejecuta cuando se libera una tecla
+        function keyUpHandler(e){
+            if (e.keyCode == 39){
+                presionaDerecha = false;
+            } else if (e.keyCode == 37){
+                presionaIzquierda = false;
+            }
+        }
+
+        //Funcion para dibujar el círculo
+        function dibujaPelota(){
+            ctx.beginPath();
+            ctx.arc(x, y, radioBola, 0, Math.PI*2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+        //Funcion que dibuja la paleta para golpear la pelota
+        function dibujaPaleta(){
+            ctx.beginPath();
+            ctx.rect(paletaX, canvas.height-altoPaleta, anchoPaleta, altoPaleta);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+        //Función para mover el círculo
+        function moverPelota(){     
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            dibujaPelota();
+            dibujaPaleta();                  
+            if (x + dx > canvas.width - radioBola || x + dx < radioBola) { //Haciendo rebote en el borde izquierdo y derecho
+                dx = -dx;
+            }
+            if (y + dy > canvas.height - radioBola || y + dy < radioBola) { //Haciendo rebote en el borde superior e inferior
+                dy = -dy;
+            }
+            if (presionaDerecha && paletaX < canvas.width-anchoPaleta){ //Haciendo que la paleta se mueva 7 px a la derecha
+                paletaX += 7;
+            } else if (presionaIzquierda && paletaX > 0){ //Haciendo que la paleta se mueva 7 px a la izquierda
+                paletaX -= 7;
+            }
+
+
+            x += dx;
+            y += dy;
+        }
+        
+        setInterval(moverPelota, 10); //Ejecución de la funcion mover Pelota
+    </script>
+</body>
+</html>
