@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>Gamedev Canvas Workshop -- Algunos Ejemplos sobre Canvas</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+
+    <script>
+        //Aqui irá el Código Javascript de juego
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        //Dibujar un cuadrado rojo
+        ctx.beginPath();
+        ctx.rect(20, 40, 50, 50);
+        ctx.fillStyle = "#FF0000";
+        ctx.fill();
+        ctx.closePath();
+        //Dibujar un circulo verde
+        ctx.beginPath();
+        ctx.arc(240, 160, 20, 0, Math.PI*2, false);
+        ctx.fillStyle = "green";
+        ctx.fill();
+        ctx.closePath();
+        //Dibujar un rectángulo con borde
+        ctx.beginPath();
+        ctx.rect(160, 10, 100, 40);
+        ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+        //ctx.fillStyle = "yellow";
+        ctx.stroke();
+        //ctx.fill();
+        ctx.closePath();
+    </script>
+</body>
+</html>
