@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>Gamedev Canvas workshop -- Vidas al Jugador</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+
+    <script>
+        var canvas = document.getElementById("myCanvas"); //Creamos el lienzo con el objeto canvas
+        var ctx = canvas.getContext("2d"); //Definimos el entorno o contexto ctx
+        var radioBola = 10; //Radio de la bola
+        var x = canvas.width/2;    // Variable que define el movimiento en X de la bola 
+        var y = canvas.height - 30;    // Variable que define el movimiento en Y de la bola 
+        var dx = 2; // Variable que dibuja el fotograma de la bola
+        var dy = -2; // Variable que dibuja el fotograma de la bola
+        var altoPaleta = 10; //altura de a paleta inferior
+        var anchoPaleta = 75; //ancho de la paleta inferior
+        var paletaX = (canvas.width-anchoPaleta)/2; //Variable que define la posicion de la paleta en e eje X
+        var presionaDerecha = false; //Variable que determina si se ha presionado el boton flecha derecha
+        var presionaIzquierda = false; //Variable que determina si se ha presionado el boton flecha izquierda
+        var brickRowCount = 3; //#de filas
+        var brickColumnCount = 5; //# de Columnas
+        var brickWidth = 75; //Ancho del bloque
+        var brickHeight = 20; //Altura del bloque
+        var brickPadding = 10; //Separación entre bloques
+        var brickOffsetTop = 30; //Margen superior de cada bloque
+        var brickOffsetLeft = 30; //Margen izquierdo de cada bloque
+        var bricks = []; //Arreglo que guarda la informacion de los ladrillos
+        var score = 0; //Variable que guarda la puntuacion del juego
+        var lives = 3; //Variable que contiene as vidas del jugador
+
+        //Asignamos las posiciones del arreglo para cada ladrillo
+        for (c = 0; c < brickColumnCount; c++){
+            bricks[c] = [];
+            for (r = 0; r < brickRowCount; r++){
+                bricks[c][r] = {x: 0, y: 0, status: 1};
+            }
+        }
+        
+        document.addEventListener("keydown", keyDownHandler, false); //Determina si se ha presionado la tecla
+        document.addEventListener("keyup", keyUpHandler, false); //Determina si se ha liberado la tecla
+        document.addEventListener("mousemove", mouseMoveHandler, false); //Determina el movimiento del mouse
+
+        //Funcion que detecta el movimiento del Mouse
+        function mouseMoveHandler(e){
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width){
+                paletaX = relativeX - anchoPaleta/2;
+            }
+        }
+
+        //Funcion que se ejecuta cuando se presiona una tecla
+        function keyDownHandler(e){
+            if (e.keyCode == 39){
+                presionaDerecha = true;
+            } else if (e.keyCode == 37){
+                presionaIzquierda = true;
+            }
+        }
+        //Funcion que se ejecuta cuando se libera una tecla
+        function keyUpHandler(e){
+            if (e.keyCode == 39){
+                presionaDerecha = false;
+            } else if (e.keyCode == 37){
+                presionaIzquierda = false;
+            }
+        }
+
+        //Funcion que detecta la colisión de la pelota con los bloques
+        function collisionDetection(){
+            for (c = 0; c < brickColumnCount; c++){
+                for (r = 0; r < brickRowCount; r++){
+                    var b = bricks[c][r];
+                    if (b.status == 1){
+                        if (x > b.x && x <  b.x + brickWidth && y > b.y && y < b.y + brickHeight){
+                            dy = -dy;
+                            b.status = 0;
+                            score++;
+                            if (score == brickRowCount * brickColumnCount){
+                                alert("YOU WIN, CONGRATULATIONS!");
+                                document.location.reload();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Funcion que dibuja la puntuacion de juego
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillstyle = "0095DD";
+            ctx.fillText("Score: "+score, 8, 20);
+        }   
+
+        //Funcion que dibuja las vidas del jugador
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillstyle = "0095DD";
+            ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+        } 
+
+        //Funcion para dibujar el círculo
+        function dibujaPelota(){
+            ctx.beginPath();
+            ctx.arc(x, y, radioBola, 0, Math.PI*2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        //Funcion que dibuja la paleta para golpear la pelota
+        function dibujaPaleta(){
+            ctx.beginPath();
+            ctx.rect(paletaX, canvas.height-altoPaleta, anchoPaleta, altoPaleta);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        //Funcion para dibujar los ladrillos o bloques
+        function drawBricks() {
+            for (c = 0; c < brickColumnCount; c++){
+                for (r = 0; r < brickRowCount; r++){
+                    if (bricks[c][r].status == 1) {
+                        var brickX = (c * (brickWidth + brickPadding))  + brickOffsetLeft;
+                        var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillstyle = "#0095DD";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        //Función para mover el círculo
+        function moverPelota(){     
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            dibujaPelota();
+            dibujaPaleta();  
+            drawScore();
+            drawLives();    
+            collisionDetection();            
+            if (x + dx > canvas.width - radioBola || x + dx < radioBola) { //Haciendo rebote en el borde izquierdo y derecho
+                dx = -dx;
+            }
+            if (y + dy < radioBola) { //Haciendo rebote en el borde superior e inferior
+                dy = -dy;
+            } else if (y + dy > canvas.height - radioBola){
+                if (x > paletaX && x < paletaX + anchoPaleta){
+                    dy = -dy;
+                } else {
+                    lives--; //REstar una vida al jugador
+                    if (!lives) { //DEterminamos que el jugador no tenga vidas y termina el juego
+                        alert("Game over");
+                        document.location.reload();
+                    } else { //Coloca la pelota en la posicion inicial
+                        x = canvas.width/2;
+                        y = canvas.height - 30;
+                        dx = 2;
+                        dy = -2;
+                        paletaX = (canvas.width - anchoPaleta)/2;
+                    }
+                }
+                
+            }
+
+            if (presionaDerecha && paletaX < canvas.width-anchoPaleta){ //Haciendo que la paleta se mueva 7 px a la derecha
+                paletaX += 7;
+            } else if (presionaIzquierda && paletaX > 0){ //Haciendo que la paleta se mueva 7 px a la izquierda
+                paletaX -= 7;
+            }
+            x += dx;
+            y += dy;
+            requestAnimationFrame(moverPelota);
+        }
+        
+        moverPelota(); //Ejecución de la funcion moverPelota()
+    </script>
+</body>
+</html>
